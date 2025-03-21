@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}ищудом - {{ _('Find Your Home in Dubai') }}{% endblock %}
+
+{% block content %}
+    <h1>{{ _('Find Your Perfect Room in Dubai') }}</h1>
+    <p>{{ _('Browse through our selection of available rooms, apartments, and living spaces in Dubai.') }}</p>
+    
+    <div class="search-form">
+        <h2>{{ _('Quick Search') }}</h2>
+        <form action="{{ url_for('search') }}" method="post">
+            <div class="search-options">
+                <div class="form-group">
+                    <label for="area">{{ _('Area') }}</label>
+                    <select name="area" id="area" class="form-control">
+                        <option value="">{{ _('All Areas') }}</option>
+                        {% for area in areas %}
+                            <option value="{{ area.area }}">{{ area.area }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="room_type">{{ _('Room Type') }}</label>
+                    <select name="room_type" id="room_type" class="form-control">
+                        <option value="">{{ _('All Types') }}</option>
+                        <option value="master_with_bathroom">{{ _('Master Room with Bathroom') }}</option>
+                        <option value="master_without_bathroom">{{ _('Master Room without Bathroom') }}</option>
+                        <option value="partition">{{ _('Partition') }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="min_price">{{ _('Min Price (AED)') }}</label>
+                    <input type="number" name="min_price" id="min_price" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="max_price">{{ _('Max Price (AED)') }}</label>
+                    <input type="number" name="max_price" id="max_price" class="form-control">
+                </div>
+            </div>
+            <button type="submit" class="btn">{{ _('Search') }}</button>
+        </form>
+    </div>
+    
+    <h2>{{ _('Featured Rooms') }}</h2>
+    <div class="room-grid">
+        {% for room in rooms %}
+            <div class="room-card">
+                <div class="room-image">
+                    {% if room.images %}
+                        <img src="{{ url_for('static', filename='uploads/' + room.images[0].filename) }}" alt="{{ room.title }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/default-room.jpg') }}" alt="{{ room.title }}">
+                    {% endif %}
+                </div>
+                <div class="room-details">
+                    <h3 class="room-title">{{ room.title }}</h3>
+                    <div class="room-price">{{ room.price }} AED</div>
+                    <div class="room-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> {{ room.area }}</span>
+                        <span><i class="fas fa-calendar"></i> {{ _('Available from') }}: {{ room.available_from.strftime('%d-%m-%Y') }}</span>
+                    </div>
+                    <p class="room-description">{{ room.description }}</p>
+                    <div class="room-actions">
+                        <a href="{{ url_for('room_detail', room_id=room.id) }}" class="btn">{{ _('View Details') }}</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>{{ _('No rooms available at the moment.') }}</p>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make sure we have areas to display in the dropdown
+        fetch('{{ url_for("api_rooms") }}')
+            .then(response => response.json())
+            .then(data => {
+                // Get unique areas
+                const areas = [...new Set(data.map(room => room.area))];
+                const areaSelect = document.getElementById('area');
+                
+                // Clear existing options except the first one
+                while (areaSelect.options.length > 1) {
+                    areaSelect.remove(1);
+                }
+                
+                // Add new options
+                areas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area;
+                    option.textContent = area;
+                    areaSelect.appendChild(option);
+                });
+            });
+    });
+</script>
+{% endblock %}

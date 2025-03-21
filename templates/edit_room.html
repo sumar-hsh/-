@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Edit Room') }} - ищудом{% endblock %}
+
+{% block content %}
+    <h1>{{ _('Edit Room') }}</h1>
+    
+    <form action="{{ url_for('edit_room', room_id=room.id) }}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">{{ _('Title') }} *</label>
+            <input type="text" name="title" id="title" class="form-control" value="{{ room.title }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">{{ _('Description') }} *</label>
+            <textarea name="description" id="description" class="form-control" rows="5" required>{{ room.description }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="price">{{ _('Price (AED)') }} *</label>
+            <input type="number" name="price" id="price" class="form-control" min="0" step="0.01" value="{{ room.price }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="area">{{ _('Area/Region') }} *</label>
+            <input type="text" name="area" id="area" class="form-control" value="{{ room.area }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="room_type">{{ _('Room Type') }} *</label>
+            <select name="room_type" id="room_type" class="form-control" required>
+                <option value="master_with_bathroom" {% if room.room_type == 'master_with_bathroom' %}selected{% endif %}>{{ _('Master Room with Bathroom') }}</option>
+                <option value="master_without_bathroom" {% if room.room_type == 'master_without_bathroom' %}selected{% endif %}>{{ _('Master Room without Bathroom') }}</option>
+                <option value="partition" {% if room.room_type == 'partition' %}selected{% endif %}>{{ _('Partition') }}</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="available_from">{{ _('Available From') }} *</label>
+            <input type="date" name="available_from" id="available_from" class="form-control" value="{{ room.available_from.strftime('%Y-%m-%d') }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="has_bathroom">{{ _('Private Bathroom') }}</label>
+            <div>
+                <input type="checkbox" name="has_bathroom" id="has_bathroom" {% if room.has_bathroom %}checked{% endif %}>
+                <label for="has_bathroom">{{ _('Has private bathroom') }}</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="number_of_neighbors">{{ _('Number of Neighbors') }} *</label>
+            <input type="number" name="number_of_neighbors" id="number_of_neighbors" class="form-control" min="0" value="{{ room.number_of_neighbors }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label>{{ _('Location') }} *</label>
+            <div id="map-picker" style="height: 400px; margin-bottom: 15px;"></div>
+            <input type="hidden" name="latitude" id="latitude" value="{{ room.latitude }}" required>
+            <input type="hidden" name="longitude" id="longitude" value="{{ room.longitude }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label>{{ _('Current Images') }}</label>
+            <div class="gallery">
+                {% for image in room.images %}
+                    <div class="gallery-item" style="position: relative;">
+                        <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ room.title }}">
+                        <form action="{{ url_for('delete_image', image_id=image.id) }}" method="post" style="position: absolute; top: 5px; right: 5px;">
+                            <button type="submit" class="btn" style="padding: 2px 5px; background-color: rgba(255,255,255,0.7);" onclick="return confirm('{{ _('Are you sure you want to delete this image?') }}');">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="images">{{ _('Add New Images') }}</label>
+            <input type="file" name="images" id="images" class="form-control" multiple accept="image/*">
+            <small>{{ _('You can select multiple images') }}</small>
+        </div>
+        
+        <button type="submit" class="btn">{{ _('Update Room') }}</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize map with room's location
+    function initMap() {
+        const roomLocation = { lat: {{ room.latitude }}, lng: {{ room.longitude }} };
+        const mapElement = document.getElementById('map-picker');
+        
+        const map = new google.maps.Map(mapElement, {
+            center: roomLocation,
+            zoom: 14
+        });
+        
+        let marker = new google.maps.Marker({
+            position: roomLocation,
+            map: map,
+            draggable: true
+        });
+        
+        // Update coordinates when marker is dragged
+        marker.addListener('dragend', function() {
+            const position = marker.getPosition();
+            document.getElementById('latitude').value = position.lat();
+            document.getElementById('longitude').value = position.lng();
+        });
+        
+        // Add marker when map is clicked
+        map.addListener('click', function(event) {
+            marker.setPosition(event.latLng);
+            document.getElementById('latitude').value = event.latLng.lat();
+            document.getElementById('longitude').value = event.latLng.lng();
+        });
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+{% endblock %}

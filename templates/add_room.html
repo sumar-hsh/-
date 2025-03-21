@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Add Room') }} - ищудом{% endblock %}
+
+{% block content %}
+    <h1>{{ _('Add a New Room') }}</h1>
+    
+    <form action="{{ url_for('add_room') }}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">{{ _('Title') }} *</label>
+            <input type="text" name="title" id="title" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">{{ _('Description') }} *</label>
+            <textarea name="description" id="description" class="form-control" rows="5" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="price">{{ _('Price (AED)') }} *</label>
+            <input type="number" name="price" id="price" class="form-control" min="0" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="area">{{ _('Area/Region') }} *</label>
+            <input type="text" name="area" id="area" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="room_type">{{ _('Room Type') }} *</label>
+            <select name="room_type" id="room_type" class="form-control" required>
+                <option value="master_with_bathroom">{{ _('Master Room with Bathroom') }}</option>
+                <option value="master_without_bathroom">{{ _('Master Room without Bathroom') }}</option>
+                <option value="partition">{{ _('Partition') }}</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="available_from">{{ _('Available From') }} *</label>
+            <input type="date" name="available_from" id="available_from" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="has_bathroom">{{ _('Private Bathroom') }}</label>
+            <div>
+                <input type="checkbox" name="has_bathroom" id="has_bathroom">
+                <label for="has_bathroom">{{ _('Has private bathroom') }}</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="number_of_neighbors">{{ _('Number of Neighbors') }} *</label>
+            <input type="number" name="number_of_neighbors" id="number_of_neighbors" class="form-control" min="0" required>
+        </div>
+        
+        <div class="form-group">
+            <label>{{ _('Location') }} *</label>
+            <div id="map-picker" style="height: 400px; margin-bottom: 15px;"></div>
+            <input type="hidden" name="latitude" id="latitude" required>
+            <input type="hidden" name="longitude" id="longitude" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="images">{{ _('Images') }}</label>
+            <input type="file" name="images" id="images" class="form-control" multiple accept="image/*">
+            <small>{{ _('You can select multiple images') }}</small>
+        </div>
+        
+        <button type="submit" class="btn">{{ _('Add Room') }}</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize map with Dubai as center
+    function initMap() {
+        const dubai = { lat: 25.2048, lng: 55.2708 };
+        const mapElement = document.getElementById('map-picker');
+        
+        const map = new google.maps.Map(mapElement, {
+            center: dubai,
+            zoom: 11
+        });
+        
+        let marker = new google.maps.Marker({
+            position: dubai,
+            map: map,
+            draggable: true
+        });
+        
+        // Set initial coordinates
+        document.getElementById('latitude').value = dubai.lat;
+        document.getElementById('longitude').value = dubai.lng;
+        
+        // Update coordinates when marker is dragged
+        marker.addListener('dragend', function() {
+            const position = marker.getPosition();
+            document.getElementById('latitude').value = position.lat();
+            document.getElementById('longitude').value = position.lng();
+        });
+        
+        // Add marker when map is clicked
+        map.addListener('click', function(event) {
+            marker.setPosition(event.latLng);
+            document.getElementById('latitude').value = event.latLng.lat();
+            document.getElementById('longitude').value = event.latLng.lng();
+        });
+    }
+    
+    // Set today's date as minimum date for available_from
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('available_from').setAttribute('min', today);
+        document.getElementById('available_from').value = today;
+    });
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+{% endblock %}

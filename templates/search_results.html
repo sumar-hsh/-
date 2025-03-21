@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Search Results') }} - ищудом{% endblock %}
+
+{% block content %}
+    <h1>{{ _('Search Results') }}</h1>
+    
+    <div class="search-results">
+        <p>{{ _('Found') }} {{ rooms|length }} {{ _('rooms matching your criteria') }}</p>
+        
+        <div class="room-grid">
+            {% for room in rooms %}
+                <div class="room-card">
+                    <div class="room-image">
+                        {% if room.images %}
+                            <img src="{{ url_for('static', filename='uploads/' + room.images[0].filename) }}" alt="{{ room.title }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='img/default-room.jpg') }}" alt="{{ room.title }}">
+                        {% endif %}
+                    </div>
+                    <div class="room-details">
+                        <h3 class="room-title">{{ room.title }}</h3>
+                        <div class="room-price">{{ room.price }} AED</div>
+                        <div class="room-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> {{ room.area }}</span>
+                            <span><i class="fas fa-calendar"></i> {{ _('Available from') }}: {{ room.available_from.strftime('%d-%m-%Y') }}</span>
+                        </div>
+                        <p class="room-description">{{ room.description }}</p>
+                        <div class="room-actions">
+                            <a href="{{ url_for('room_detail', room_id=room.id) }}" class="btn">{{ _('View Details') }}</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p>{{ _('No rooms found matching your criteria. Please try a different search.') }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <a href="{{ url_for('search') }}" class="btn">{{ _('New Search') }}</a>
+    </div>
+{% endblock %}

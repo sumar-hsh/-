@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}{{ room.title }} - ищудом{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .main-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        margin-bottom: 20px;
+    }
+    
+    .room-price-large {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .room-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+    }
+    
+    .modal-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 800px;
+        max-height: 80%;
+        object-fit: contain;
+    }
+    
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+    
+    .close:hover,
+    .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="room-detail">
+        <div class="room-gallery">
+            {% if room.images %}
+                <img src="{{ url_for('static', filename='uploads/' + room.images[0].filename) }}" alt="{{ room.title }}" class="main-image" id="main-image">
+                
+                <div class="gallery">
+                    {% for image in room.images %}
+                        <div class="gallery-item">
+                            <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ room.title }}" onclick="showImage(this.src)">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <img src="{{ url_for('static', filename='img/default-room.jpg') }}" alt="{{ room.title }}" class="main-image">
+            {% endif %}
+        </div>
+        
+        <div class="room-info">
+            <h1>{{ room.title }}</h1>
+            <div class="room-price-large">{{ room.price }} AED</div>
+            
+            <div class="room-features">
+                <div class="room-feature">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ room.area }}</span>
+                </div>
+                <div class="room-feature">
+                    <i class="fas fa-home"></i>
+                    <span>
+                        {% if room.room_type == 'master_with_bathroom' %}
+                            {{ _('Master Room with Bathroom') }}
+                        {% elif room.room_type == 'master_without_bathroom' %}
+                            {{ _('Master Room without Bathroom') }}
+                        {% elif room.room_type == 'partition' %}
+                            {{ _('Partition') }}
+                        {% else %}
+                            {{ room.room_type }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="room-feature">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ _('Available from') }}: {{ room.available_from.strftime('%d-%m-%Y') }}</span>
+                </div>
+                <div class="room-feature">
+                    <i class="fas fa-bath"></i>
+                    <span>
+                        {% if room.has_bathroom %}
+                            {{ _('Private Bathroom') }}
+                        {% else %}
+                            {{ _('Shared Bathroom') }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="room-feature">
+                    <i class="fas fa-users"></i>
+                    <span>{{ _('Neighbors') }}: {{ room.number_of_neighbors }}</span>
+                </div>
+            </div>
+            
+            <h2>{{ _('Description') }}</h2>
+            <p>{{ room.description }}</p>
+            
+            <h2>{{ _('Contact') }}</h2>
+            <p>{{ _('Owner') }}: {{ room.owner.username }}</p>
+            
+            {% if current_user.is_authenticated and current_user.id == room.user_id %}
+                <div class="room-actions" style="margin-top: 20px;">
+                    <a href="{{ url_for('edit_room', room_id=room.id) }}" class="btn">{{ _('Edit Room') }}</a>
+                    <form action="{{ url_for('delete_room', room_id=room.id) }}" method="post" style="display: inline;" onsubmit="return confirm('{{ _('Are you sure you want to delete this room?') }}');">
+                        <button type="submit" class="btn">{{ _('Delete Room') }}</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <h2>{{ _('Location') }}</h2>
+    <div id="map"></div>
+    
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="expandedImg">
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Display full image when clicked
+    function showImage(src) {
+        var modal = document.getElementById("imageModal");
+        var modalImg = document.getElementById("expandedImg");
+        modal.style.display = "block";
+        modalImg.src = src;
+        
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        // Close modal when clicking outside image
+        modal.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+    
+    // Google Maps integration
+    function initMap() {
+        const lat = {{ room.latitude }};
+        const lng = {{ room.longitude }};
+        const mapElement = document.getElementById('map');
+        
+        const map = new google.maps.Map(mapElement, {
+            center: { lat: lat, lng: lng },
+            zoom: 15
+        });
+        
+        const marker = new google.maps.Marker({
+            position: { lat: lat, lng: lng },
+            map: map,
+            title: '{{ room.title }}'
+        });
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+{% endblock %}
