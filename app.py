@@ -16,7 +16,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///rooms.db'  # Using SQLite for
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
-app.config['BABEL_DEFAULT_LOCALE'] = 'ru'  # Default language is Russian
+app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations' # Default language is Russian
 app.config['LANGUAGES'] = {
     'ru': 'Русский',
     'en': 'English',
@@ -342,17 +342,38 @@ def profile():
     rooms = Room.query.filter_by(user_id=current_user.id).all()
     return render_template('profile.html', rooms=rooms)
 
+
 @app.route('/change_language/<lang>')
 def change_language(lang):
     if lang in app.config['LANGUAGES']:
         redirect_url = request.referrer or url_for('index')
-        # Add language parameter to the URL
-        if '?' in redirect_url:
-            redirect_url = f"{redirect_url}&lang={lang}"
-        else:
-            redirect_url = f"{redirect_url}?lang={lang}"
+        # Fix - parse existing URL and replace lang parameter if it exists
+        from urllib.parse import urlparse, parse_qs, urlencode
+
+        parsed_url = urlparse(redirect_url)
+        params = parse_qs(parsed_url.query)
+        params['lang'] = [lang]  # Replace or add lang parameter
+
+        # Rebuild the URL with updated parameters
+        query_string = urlencode(params, doseq=True)
+        redirect_url = parsed_url._replace(query=query_string).geturl()
+
         return redirect(redirect_url)
     return redirect(url_for('index'))
+
+
+
+# @app.route('/change_language/<lang>')
+# def change_language(lang):
+#     if lang in app.config['LANGUAGES']:
+#         redirect_url = request.referrer or url_for('index')
+#         # Add language parameter to the URL
+#         if '?' in redirect_url:
+#             redirect_url = f"{redirect_url}&lang={lang}"
+#         else:
+#             redirect_url = f"{redirect_url}?lang={lang}"
+#         return redirect(redirect_url)
+#     return redirect(url_for('index'))
 
 @app.route('/api/rooms', methods=['GET'])
 def api_rooms():
@@ -393,4 +414,4 @@ def api_room_detail(room_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

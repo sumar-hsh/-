@@ -10,21 +10,21 @@
         object-fit: cover;
         margin-bottom: 20px;
     }
-    
+
     .room-price-large {
         font-size: 1.8rem;
         font-weight: bold;
         color: var(--secondary-color);
         margin-bottom: 20px;
     }
-    
+
     .room-features {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 15px;
         margin-bottom: 30px;
     }
-    
+
     .image-modal {
         display: none;
         position: fixed;
@@ -36,7 +36,7 @@
         overflow: auto;
         background-color: rgba(0,0,0,0.9);
     }
-    
+
     .modal-content {
         margin: auto;
         display: block;
@@ -45,7 +45,7 @@
         max-height: 80%;
         object-fit: contain;
     }
-    
+
     .close {
         position: absolute;
         top: 15px;
@@ -56,7 +56,7 @@
         transition: 0.3s;
         cursor: pointer;
     }
-    
+
     .close:hover,
     .close:focus {
         color: #bbb;
@@ -71,7 +71,7 @@
         <div class="room-gallery">
             {% if room.images %}
                 <img src="{{ url_for('static', filename='uploads/' + room.images[0].filename) }}" alt="{{ room.title }}" class="main-image" id="main-image">
-                
+
                 <div class="gallery">
                     {% for image in room.images %}
                         <div class="gallery-item">
@@ -83,11 +83,11 @@
                 <img src="{{ url_for('static', filename='img/default-room.jpg') }}" alt="{{ room.title }}" class="main-image">
             {% endif %}
         </div>
-        
+
         <div class="room-info">
             <h1>{{ room.title }}</h1>
             <div class="room-price-large">{{ room.price }} AED</div>
-            
+
             <div class="room-features">
                 <div class="room-feature">
                     <i class="fas fa-map-marker-alt"></i>
@@ -126,13 +126,13 @@
                     <span>{{ _('Neighbors') }}: {{ room.number_of_neighbors }}</span>
                 </div>
             </div>
-            
+
             <h2>{{ _('Description') }}</h2>
             <p>{{ room.description }}</p>
-            
+
             <h2>{{ _('Contact') }}</h2>
             <p>{{ _('Owner') }}: {{ room.owner.username }}</p>
-            
+
             {% if current_user.is_authenticated and current_user.id == room.user_id %}
                 <div class="room-actions" style="margin-top: 20px;">
                     <a href="{{ url_for('edit_room', room_id=room.id) }}" class="btn">{{ _('Edit Room') }}</a>
@@ -143,10 +143,10 @@
             {% endif %}
         </div>
     </div>
-    
+
     <h2>{{ _('Location') }}</h2>
     <div id="map"></div>
-    
+
     <!-- Image Modal -->
     <div id="imageModal" class="image-modal">
         <span class="close">&times;</span>
@@ -162,15 +162,15 @@
         var modalImg = document.getElementById("expandedImg");
         modal.style.display = "block";
         modalImg.src = src;
-        
+
         // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
-        
+
         // When the user clicks on <span> (x), close the modal
         span.onclick = function() {
             modal.style.display = "none";
         }
-        
+
         // Close modal when clicking outside image
         modal.onclick = function(event) {
             if (event.target === modal) {
@@ -178,18 +178,18 @@
             }
         }
     }
-    
+
     // Google Maps integration
     function initMap() {
         const lat = {{ room.latitude }};
         const lng = {{ room.longitude }};
         const mapElement = document.getElementById('map');
-        
+
         const map = new google.maps.Map(mapElement, {
             center: { lat: lat, lng: lng },
             zoom: 15
         });
-        
+
         const marker = new google.maps.Marker({
             position: { lat: lat, lng: lng },
             map: map,

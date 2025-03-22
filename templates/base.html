@@ -3,348 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ищудом{% endblock %}</title>
+    <title>{% block title %}ЖивуВДубае{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #ffffff;
-            --secondary-color: #000000;
-            --accent-color: #f0f0f0;
-            --text-color: #333333;
-            --border-color: #000000;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        body {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header styles */
-        header {
-            background-color: var(--primary-color);
-            border-bottom: 2px solid var(--border-color);
-            padding: 20px 0;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            text-decoration: none;
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-        
-        nav ul li {
-            margin-left: 20px;
-        }
-        
-        nav ul li a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            padding: 5px 10px;
-            border: 1px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        nav ul li a:hover {
-            border-bottom: 1px solid var(--secondary-color);
-        }
-        
-        /* Language switcher */
-        .language-switcher {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .language-switcher a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            padding: 5px;
-        }
-        
-        /* Main content */
-        main {
-            padding: 40px 0;
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-            color: var(--secondary-color);
-            margin-bottom: 20px;
-        }
-        
-        /* Room cards */
-        .room-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 30px;
-        }
-        
-        .room-card {
-            background-color: var(--primary-color);
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        
-        .room-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .room-image {
-            height: 200px;
-            overflow: hidden;
-        }
-        
-        .room-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .room-details {
-            padding: 20px;
-        }
-        
-        .room-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .room-price {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            margin-bottom: 10px;
-        }
-        
-        .room-meta {
-            color: var(--text-color);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        
-        .room-description {
-            margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .room-actions {
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .btn {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            padding: 8px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .btn:hover {
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
-        }
-        
-        /* Forms */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-        }
-        
-        /* Search form */
-        .search-form {
-            background-color: var(--primary-color);
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            margin-bottom: 30px;
-        }
-        
-        .search-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        /* Footer */
-        footer {
-            background-color: var(--primary-color);
-            border-top: 2px solid var(--border-color);
-            padding: 20px 0;
-            text-align: center;
-        }
-        
-        /* Alerts */
-        .alert {
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        /* Room detail page */
-        .room-detail {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-        
-        .room-gallery {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .room-info {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .room-feature {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .room-feature i {
-            margin-right: 10px;
-            color: var(--secondary-color);
-        }
-        
-        /* Image gallery */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .gallery-item {
-            height: 150px;
-            overflow: hidden;
-        }
-        
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-        }
-        
-        /* Map */
-        #map {
-            height: 400px;
-            width: 100%;
-            margin-top: 30px;
-            border: 1px solid var(--border-color);
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            nav ul {
-                margin-top: 20px;
-                justify-content: center;
-            }
-            
-            nav ul li {
-                margin: 0 10px;
-            }
-            
-            .room-detail {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style3.css') }}">
     {% block additional_styles %}{% endblock %}
 </head>
 <body>
     <header>
         <div class="container">
             <div class="header-content">
-                <a href="{{ url_for('index') }}" class="logo">ищудом</a>
+                <a href="{{ url_for('index') }}" class="logo">ЖивуВДубае</a>
                 <nav>
                     <ul>
-                        <li><a href="{{ url_for('index') }}">{{ _('Home') }}</a></li>
-                        <li><a href="{{ url_for('search') }}">{{ _('Search') }}</a></li>
+                        <li><a href="{{ url_for('index') }}">{{ _('Главная') }}</a></li>
+                        <li><a href="{{ url_for('search') }}">{{ _('Поиск') }}</a></li>
                         {% if current_user.is_authenticated %}
-                            <li><a href="{{ url_for('add_room') }}">{{ _('Add Room') }}</a></li>
-                            <li><a href="{{ url_for('profile') }}">{{ _('Profile') }}</a></li>
-                            <li><a href="{{ url_for('logout') }}">{{ _('Logout') }}</a></li>
+                            <li><a href="{{ url_for('add_room') }}">{{ _('Добавить комнату') }}</a></li>
+                            <li><a href="{{ url_for('profile') }}">{{ _('Профиль') }}</a></li>
+                            <li><a href="{{ url_for('logout') }}">{{ _('Выйти') }}</a></li>
                         {% else %}
-                            <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
-                            <li><a href="{{ url_for('register') }}">{{ _('Register') }}</a></li>
+                            <li><a href="{{ url_for('login') }}">{{ _('Войти') }}</a></li>
+                            <li><a href="{{ url_for('register') }}">{{ _('Регистрация') }}</a></li>
                         {% endif %}
                     </ul>
                 </nav>
                 <div class="language-switcher">
                     <a href="{{ url_for('change_language', lang='ru') }}">РУ</a>
                     <a href="{{ url_for('change_language', lang='en') }}">EN</a>
-                    <a href="{{ url_for('change_language', lang='es') }}">ES</a>
+<!--                    <a href="{{ url_for('change_language', lang='es') }}">ES</a>-->
                 </div>
             </div>
         </div>
@@ -364,10 +50,29 @@
     
     <footer>
         <div class="container">
-            <p>&copy; 2025 ищудом - {{ _('Find Your Home in Dubai') }}</p>
+            <p>&copy; 2025 ЖивуВДубае - {{ _('Найди свой дом в Дубае') }}</p>
         </div>
     </footer>
     
     {% block scripts %}{% endblock %}
+Copy<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.createElement('button');
+        menuToggle.className = 'menu-toggle';
+        menuToggle.innerHTML = '<span></span><span></span><span></span>';
+
+        const headerContent = document.querySelector('.header-content');
+        const nav = document.querySelector('nav');
+
+        // Insert the menu toggle before the nav element
+        headerContent.insertBefore(menuToggle, nav);
+
+        // Add event listener to toggle menu
+        menuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+    });
+</script>
 </body>
 </html>

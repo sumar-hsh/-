@@ -1,56 +1,56 @@
 {% extends "base.html" %}
 
-{% block title %}{{ _('Search Rooms') }} - ищудом{% endblock %}
+{% block title %}{{ _('Поиск жилья ') }} - ищудом{% endblock %}
 
 {% block content %}
-    <h1>{{ _('Search Rooms') }}</h1>
-    
+    <h1>{{ _('Поиск жилья ') }}</h1>
+
     <div class="search-form">
         <form action="{{ url_for('search') }}" method="post">
             <div class="search-options">
                 <div class="form-group">
-                    <label for="area">{{ _('Area/Region') }}</label>
+                    <label for="area">{{ _('Район/Регион') }}</label>
                     <select name="area" id="area" class="form-control">
-                        <option value="">{{ _('All Areas') }}</option>
+                        <option value="">{{ _('Все районы') }}</option>
                         {% for area in areas %}
                             <option value="{{ area.area }}">{{ area.area }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="room_type">{{ _('Room Type') }}</label>
+                    <label for="room_type">{{ _('Тип жилья ') }}</label>
                     <select name="room_type" id="room_type" class="form-control">
-                        <option value="">{{ _('All Types') }}</option>
-                        <option value="master_with_bathroom">{{ _('Master Room with Bathroom') }}</option>
-                        <option value="master_without_bathroom">{{ _('Master Room without Bathroom') }}</option>
-                        <option value="partition">{{ _('Partition') }}</option>
+                        <option value="">{{ _('Все типы') }}</option>
+                        <option value="master_with_bathroom">{{ _('Главная комната с ванной') }}</option>
+                        <option value="master_without_bathroom">{{ _('Главная комната без ванной') }}</option>
+                        <option value="partition">{{ _('Перегородка') }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="has_bathroom">{{ _('Private Bathroom') }}</label>
+                    <label for="has_bathroom">{{ _('Личная ванная') }}</label>
                     <div>
                         <input type="checkbox" name="has_bathroom" id="has_bathroom">
-                        <label for="has_bathroom">{{ _('Has private bathroom') }}</label>
+                        <label for="has_bathroom">{{ _('Есть личная ванная') }}</label>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="min_price">{{ _('Min Price (AED)') }}</label>
+                    <label for="min_price">{{ _('Мин. цена (AED)') }}</label>
                     <input type="number" name="min_price" id="min_price" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="max_price">{{ _('Max Price (AED)') }}</label>
+                    <label for="max_price">{{ _('Макс. цена (AED)') }}</label>
                     <input type="number" name="max_price" id="max_price" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="available_from">{{ _('Available From') }}</label>
+                    <label for="available_from">{{ _('Доступно с') }}</label>
                     <input type="date" name="available_from" id="available_from" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="neighbors">{{ _('Max Neighbors') }}</label>
+                    <label for="neighbors">{{ _('Макс. соседей') }}</label>
                     <input type="number" name="neighbors" id="neighbors" class="form-control" min="0">
                 </div>
             </div>
-            <button type="submit" class="btn">{{ _('Search') }}</button>
+            <button type="submit" class="btn">{{ _('Поиск') }}</button>
         </form>
     </div>
 {% endblock %}
